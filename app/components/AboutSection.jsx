@@ -4,242 +4,152 @@ import TabButton from './TabButton'
 
 const SKILLS = [
   {
-    id: 'gitlab',
-    label: 'Git',
-    sublabel: 'GitLab · GitHub',
+    id: 'version-control',
+    label: 'Version Control',
+    tools: ['Git', 'GitHub', 'GitLab'],
     color: '#3db93d',
-    desc: 'Worked with both GitLab and GitHub for source control and CI/CD GitHub for, professional personal and university projects.',
+    desc: 'Used Git across GitHub and GitLab for source control and CI/CD on professional, personal, and university projects.',
   },
   {
     id: 'cicd',
-    label: 'Jenkins',
-    sublabel: 'CI/CD pipelines',
+    label: 'CI/CD Automation',
+    tools: ['Jenkins'],
     color: '#3db93d',
-    desc: 'Worked directly with Jenkins pipelines to deploy applications to OpenShift at HMLR, and troubleshooted pipeline and configuration issues related to Jenkins.',
+    desc: 'Built and maintained Jenkins pipelines to deploy applications to OpenShift at HM Land Registry, troubleshooting pipeline and configuration issues along the way.',
   },
   {
-    id: 'helm',
-    label: 'Helm',
-    sublabel: 'Infrastructure as code',
+    id: 'deployment-automation',
+    label: 'Deployment Automation',
+    tools: ['Helm'],
     color: '#3db93d',
-    desc: 'Written and debugged Helm at HMLR to define application deployments for OpenShift, ensuring relevant environemnt set ups for different regions.',
+    desc: 'Wrote and debugged Helm charts at HM Land Registry to define application deployments for OpenShift, ensuring correct environment setups across regions.',
   },
   {
-    id: 'openshift',
-    label: 'OpenShift',
-    sublabel: 'Managing deployments',
+    id: 'kubernetes',
+    label: 'Enterprise Kubernetes',
+    tools: ['OpenShift'],
     color: '#EE0000',
-    desc: 'Daily use at HMLR — receives Helm chart deployments from Jenkins, orchestrates containerised workloads.',
+    desc: 'Daily use at HM Land Registry — OpenShift receives Helm chart deployments from Jenkins and orchestrates containerised workloads in production.',
   },
   {
-    id: 'linux',
-    label: 'Linux',
-    sublabel: 'RHEL / OpenSuse / Ubuntu',
+    id: 'sysadmin',
+    label: 'Systems Administration',
+    tools: ['Linux', 'RHEL', 'openSUSE', 'Ubuntu'],
     color: '#EE0000',
-    desc: 'Support Linux operating systems, software updates and removal, storage management, and setting up additional monitors using Puppet.',
+    desc: 'Supported Linux systems day to day — software updates and removal, storage management, and configuring additional monitors using Puppet.',
   },
   {
-    id: 'docker',
-    label: 'Docker',
-    sublabel: 'Containers',
+    id: 'containerization',
+    label: 'Containerization',
+    tools: ['Docker'],
     color: '#4da3ff',
-    desc: 'Containerised microservices for HMLR. used Git and Docker to orchestrate a shared development environment.',
+    desc: 'Containerised microservices for HM Land Registry, using Docker alongside Git to orchestrate a shared development environment.',
   },
   {
-    id: 'python',
-    label: 'Python',
-    sublabel: 'Flask · FastAPI',
+    id: 'backend',
+    label: 'Backend Development',
+    tools: ['Python', 'FastAPI', 'Flask', 'Java', 'Spring Boot'],
     color: '#4da3ff',
-    desc: 'development of FastAPI and Flask microservices at HMLR using Python microservices utilising Gunvicorn, DBOSS, Routing,and SSO RBAC.',
+    desc: 'Developed FastAPI and Flask microservices at HM Land Registry using Gunicorn, DBOSS, routing, and SSO/RBAC; also built Spring Boot web services — including a Spotify playlist automation tool — and academic projects at the University of Plymouth.',
   },
   {
-    id: 'java',
-    label: 'Java',
-    sublabel: 'Springboot',
-    color: '#4da3ff',
-    desc: 'Springboot web services including a Spotify playlist automation tool; academic projects at University of Plymouth.',
-  },
-  {
-    id: 'terraform',
-    label: 'Terraform',
-    sublabel: 'Infrastructure as Code',
+    id: 'iac',
+    label: 'Infrastructure as Code',
+    tools: ['Terraform'],
     color: '#f0ab00',
-    desc: 'Terraform provisions and manages AWS resources — upgraded RDS instances to Graviton, migrated Redis instances across accounts and regions.',
+    desc: 'Used Terraform to provision and manage AWS resources — upgrading RDS instances to Graviton and migrating Redis instances across accounts and regions.',
   },
   {
-    id: 'aws',
-    label: 'AWS',
-    sublabel: 'Supporting infrastructure',
+    id: 'cloud',
+    label: 'Cloud Infrastructure',
+    tools: ['AWS'],
     color: '#f0ab00',
     desc: 'Provisioned and upgraded RDS instances, migrated Redis instances across accounts and regions, and managed supporting cloud resources for applications running on OpenShift.',
   },
 ]
 
-function InfraDiagram({ selected, onSelect, expanded = false }) {
-  const sp = expanded ? 'space-y-3' : 'space-y-1.5'
-  const fs = expanded ? 'text-xs' : 'text-[9px]'
+const SKILL_GROUPS = {
+  '#3db93d': 'Delivery Pipeline',
+  '#EE0000': 'Platform Operations',
+  '#4da3ff': 'Application Development',
+  '#f0ab00': 'Cloud & Infrastructure',
+}
+
+function SkillsList({ selected, onSelect, large = false }) {
+  let lastColor = null
+  return (
+    <div className="font-mono">
+      {SKILLS.map((skill, i) => {
+        const showHeader = skill.color !== lastColor
+        lastColor = skill.color
+        return (
+          <React.Fragment key={skill.id}>
+            {showHeader && (
+              <p className={`text-[10px] uppercase tracking-widest text-os-muted ${i === 0 ? 'mb-2' : 'mt-5 mb-2'}`}>
+                {SKILL_GROUPS[skill.color]}
+              </p>
+            )}
+            <SkillRow
+              skill={skill}
+              index={i + 1}
+              open={selected === skill.id}
+              onToggle={() => onSelect(selected === skill.id ? null : skill.id)}
+              large={large}
+            />
+          </React.Fragment>
+        )
+      })}
+    </div>
+  )
+}
+
+function SkillRow({ skill, index, open, onToggle, large }) {
+  const tag = (tool) => (
+    <span
+      key={tool}
+      className="text-[9px] px-1.5 py-0.5 rounded border whitespace-nowrap"
+      style={{ borderColor: skill.color + '55', color: skill.color + 'dd', background: skill.color + '0a' }}
+    >
+      {tool}
+    </span>
+  )
 
   return (
-    <div className={`font-mono text-xs ${sp}`}>
-      <style>{`
-        @keyframes flow-down { to { stroke-dashoffset: -24; } }
-        .arrow-anim { animation: flow-down 1.4s linear infinite; }
-        .skill-node { cursor: pointer; transition: all 0.2s; }
-        .skill-node:hover { opacity: 0.85; }
-      `}</style>
-
-      {/* Git at top — full width */}
-      <SkillNode id="gitlab" selected={selected} onSelect={onSelect} expanded={expanded} skills={SKILLS} className="flex justify-center">
-        <NodeBox id="gitlab" selected={selected} expanded={expanded} skills={SKILLS} width="w-full" />
-      </SkillNode>
-
-      {/* Single arrow on mobile */}
-      <div className="sm:hidden flex justify-center">
-        <FlowArrow color="#3db93d" />
-      </div>
-
-      {/* Two arrows — desktop */}
-      <div className="hidden sm:flex justify-around px-4">
-        <div className="flex flex-col items-center gap-0.5">
-          <FlowArrow color="#3db93d" />
-          <span className={`${fs} text-os-muted font-mono`}>triggers</span>
-        </div>
-        <div className="flex flex-col items-center gap-0.5">
-          <FlowArrow color="#3db93d" />
-          <span className={`${fs} text-os-muted font-mono`}>tf apply</span>
-        </div>
-      </div>
-
-      {/* Two columns — stretch fully in both modes */}
-      <div className={`grid grid-cols-1 sm:grid-cols-2 ${expanded ? 'gap-6' : 'gap-2'}`}>
-
-        {/* Left — Jenkins → Helm → OpenShift → Docker */}
-        <div className={sp}>
-          <SkillNode id="cicd" selected={selected} onSelect={onSelect} expanded={expanded} skills={SKILLS} className="flex justify-center">
-            <NodeBox id="cicd" selected={selected} expanded={expanded} skills={SKILLS} width="w-full" />
-          </SkillNode>
-          <FlowArrow color="#3db93d" />
-          <SkillNode id="helm" selected={selected} onSelect={onSelect} expanded={expanded} skills={SKILLS} className="flex justify-center">
-            <NodeBox id="helm" selected={selected} expanded={expanded} skills={SKILLS} width="w-full" />
-          </SkillNode>
-          <FlowArrow color="#3db93d" />
-          <LayerBox id="openshift" selected={selected} onSelect={onSelect} expanded={expanded} skills={SKILLS}>
-            <div className={`${sp} mt-1`}>
-              <FlowArrow color="#EE0000" />
-              <LayerBox id="docker" selected={selected} onSelect={onSelect} expanded={expanded} skills={SKILLS}>
-                <div className={`grid grid-cols-2 gap-2 mt-1`}>
-                  <SkillNode id="python" selected={selected} onSelect={onSelect} expanded={expanded} skills={SKILLS} className="">
-                    <NodeBox id="python" selected={selected} expanded={expanded} skills={SKILLS} width="w-full" small={!expanded} />
-                  </SkillNode>
-                  <SkillNode id="java" selected={selected} onSelect={onSelect} expanded={expanded} skills={SKILLS} className="">
-                    <NodeBox id="java" selected={selected} expanded={expanded} skills={SKILLS} width="w-full" small={!expanded} />
-                  </SkillNode>
-                </div>
-              </LayerBox>
-              <SkillNode id="linux" selected={selected} onSelect={onSelect} expanded={expanded} skills={SKILLS} className="">
-                <NodeBox id="linux" selected={selected} expanded={expanded} skills={SKILLS} width="w-full" small={!expanded} />
-              </SkillNode>
-            </div>
-          </LayerBox>
-        </div>
-
-        {/* Right — Terraform → AWS */}
-        <div className={sp}>
-          <SkillNode id="terraform" selected={selected} onSelect={onSelect} expanded={expanded} skills={SKILLS} className="flex justify-center">
-            <NodeBox id="terraform" selected={selected} expanded={expanded} skills={SKILLS} width="w-full" />
-          </SkillNode>
-          <FlowArrow color="#f0ab00" />
-          <LayerBox id="aws" selected={selected} onSelect={onSelect} expanded={expanded} skills={SKILLS}>
-            {!expanded && <p className="text-[#f0ab0099] text-[9px] text-center mt-1">Supporting infrastructure</p>}
-          </LayerBox>
-        </div>
-      </div>
-
-      {/* Click-to-expand description panel (normal mode only) */}
-      {!expanded && (
-        <div
-          className={`mt-3 rounded border transition-all duration-300 overflow-hidden ${selected ? 'border-os-border' : 'border-transparent'}`}
-          style={{ minHeight: selected ? '56px' : '0' }}
+    <div className="border-b border-os-border last:border-b-0">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center gap-3 py-3 text-left group cursor-pointer"
+        aria-expanded={open}
+      >
+        <span
+          className="shrink-0 inline-block transition-transform duration-200"
+          style={{ transform: open ? 'rotate(90deg)' : 'rotate(0deg)', color: open ? skill.color : 'var(--os-muted)' }}
         >
-          {selected && (() => {
-            const skill = SKILLS.find(s => s.id === selected)
-            return (
-              <div className="p-3 space-y-1">
-                <p className="font-bold text-[11px]" style={{ color: skill.color }}>{skill.label}</p>
-                <p className="text-os-text-dim text-[11px] leading-relaxed">{skill.desc}</p>
-              </div>
-            )
-          })()}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function NodeBox({ id, selected, expanded, skills, width, small }) {
-  const skill = skills.find(s => s.id === id)
-  const active = selected === id || expanded
-  const labelSize = expanded ? '13px' : small ? '9px' : '11px'
-  const subSize   = expanded ? '11px' : '9px'
-  return (
-    <div
-      className={`border rounded text-center transition-all duration-200 ${width} ${expanded ? 'px-4 py-3' : 'px-3 py-1.5'}`}
-      style={{
-        borderColor: active ? skill.color : skill.color + '88',
-        background:  active ? skill.color + '22' : skill.color + '0a',
-      }}
-    >
-      <p className="font-bold" style={{ color: skill.color, fontSize: labelSize }}>{skill.label}</p>
-      <p className="text-os-muted" style={{ fontSize: subSize }}>{skill.sublabel}</p>
-      {expanded && (
-        <p className="text-os-text-dim leading-relaxed mt-2 text-left text-xs">
-          {skill.desc}
-        </p>
-      )}
-    </div>
-  )
-}
-
-function LayerBox({ id, selected, onSelect, expanded, skills, children }) {
-  const skill = skills.find(s => s.id === id)
-  const active = selected === id || expanded
-  return (
-    <div
-      className={`border rounded transition-all duration-200 ${expanded ? 'p-3' : 'p-2'}`}
-      style={{
-        borderColor: active ? skill.color : skill.color + '66',
-        background:  active ? skill.color + '11' : 'transparent',
-      }}
-    >
-      <button className="skill-node w-full text-center mb-1.5" onClick={() => onSelect(id === selected ? null : id)}>
-        <p className="font-bold uppercase tracking-wider" style={{ color: skill.color, fontSize: expanded ? '12px' : '10px' }}>{skill.label}</p>
-        <p className="text-os-muted" style={{ fontSize: expanded ? '10px' : '9px' }}>{skill.sublabel}</p>
-        {expanded && (
-          <p className="text-os-text-dim text-left leading-relaxed mt-1 text-xs">
-            {skill.desc}
-          </p>
-        )}
+          ▸
+        </span>
+        <span className="shrink-0 text-os-muted text-[10px] tabular-nums">{String(index).padStart(2, '0')}</span>
+        <span
+          className={`font-bold group-hover:opacity-80 transition-opacity ${large ? 'text-sm' : 'text-xs'}`}
+          style={{ color: skill.color }}
+        >
+          {skill.label}
+        </span>
+        <span className="hidden sm:flex flex-wrap gap-1.5 ml-auto justify-end">
+          {skill.tools.map(tag)}
+        </span>
       </button>
-      {children}
-    </div>
-  )
-}
 
-function SkillNode({ id, selected, onSelect, expanded, children, className }) {
-  return (
-    <div className={`skill-node ${className}`} onClick={() => onSelect(id === selected ? null : id)}>
-      {children}
-    </div>
-  )
-}
-
-function FlowArrow({ color }) {
-  return (
-    <div className="flex justify-center">
-      <svg width="12" height="18" viewBox="0 0 12 18">
-        <line x1="6" y1="0" x2="6" y2="12" stroke={color} strokeWidth="1.5" strokeDasharray="4 3" className="arrow-anim" />
-        <polygon points="6,18 2,10 10,10" fill={color} />
-      </svg>
+      <div className="grid transition-[grid-template-rows] duration-300 ease-out" style={{ gridTemplateRows: open ? '1fr' : '0fr' }}>
+        <div className="overflow-hidden">
+          <div className="pl-8 pr-2 pb-4">
+            <div className="sm:hidden flex flex-wrap gap-1.5 mb-2">
+              {skill.tools.map(tag)}
+            </div>
+            <p className="text-os-muted text-[10px] mb-1">$ whatis {skill.id}</p>
+            <p className="text-os-text-dim text-xs leading-relaxed">{skill.desc}</p>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -347,7 +257,7 @@ const AboutSection = () => {
                 <div className="console-header justify-between shrink-0">
                   <span className="text-os-text-dim text-xs font-mono">My Skills</span>
                   <div className="flex items-center gap-3">
-                    <span className="text-os-muted text-[10px] font-mono hidden sm:block">click a node to read more</span>
+                    <span className="text-os-muted text-[10px] font-mono hidden sm:block">click a skill to expand</span>
                     <button
                       onClick={() => setExpanded(false)}
                       aria-label="Close fullscreen"
@@ -361,7 +271,7 @@ const AboutSection = () => {
                   </div>
                 </div>
                 <div className="p-6 overflow-auto flex-1">
-                  <InfraDiagram selected={selectedSkill} onSelect={setSelectedSkill} expanded={true} />
+                  <SkillsList selected={selectedSkill} onSelect={setSelectedSkill} large />
                 </div>
               </div>
             </div>
@@ -372,10 +282,10 @@ const AboutSection = () => {
               <div className="console-header justify-between">
                 <span className="text-os-text-dim text-xs font-mono">My Skills</span>
                 <div className="flex items-center gap-3">
-                  <span className="text-os-muted text-[10px] font-mono hidden sm:block">click a node to read more</span>
+                  <span className="text-os-muted text-[10px] font-mono hidden sm:block">click a skill to expand</span>
                   <button
                     onClick={() => setExpanded(true)}
-                    aria-label="Expand skills diagram"
+                    aria-label="Expand skills list"
                     title="Expand to fullscreen"
                     className="hidden md:block text-os-text-dim hover:text-os-red transition-colors"
                   >
@@ -386,7 +296,7 @@ const AboutSection = () => {
                 </div>
               </div>
               <div className="p-6">
-                <InfraDiagram selected={selectedSkill} onSelect={setSelectedSkill} expanded={false} />
+                <SkillsList selected={selectedSkill} onSelect={setSelectedSkill} />
               </div>
             </div>
           </div>

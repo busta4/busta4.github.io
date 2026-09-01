@@ -48,8 +48,8 @@ const HeroSection = () => {
                 <p>
                   I&apos;m a DevOps Engineer working at HM Land Registry in the WebOps team where I work with 
                   Linux infrastructure, OpenShift, AWS, and internal tooling. I&apos;m currently
-                  completing my placement year in my role before I go part time to complete 
-                  my final year studying Computer Science at the University of Plymouth.
+                  completing my final year studying Computer Science at the University of Plymouth before returning full time at 
+                  HMLR after my degree.
                 </p>
                 <p>
                   This portfolio is a showcase of my personal projects and achievements alongside my academic
